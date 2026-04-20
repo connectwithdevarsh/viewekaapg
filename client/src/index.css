@@ -336,22 +336,14 @@ section.animate-in {
   transform: translateY(0);
 }
 
-/* Scrollbar Styling */
+/* Hide Scrollbar Completely */
 ::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: hsl(220, 25%, 8%);
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, hsl(250, 95%, 50%) 0%, hsl(280, 85%, 45%) 100%);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, hsl(250, 95%, 60%) 0%, hsl(280, 85%, 55%) 100%);
+html, body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 /* Gen-G WhatsApp Button */
