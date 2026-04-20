@@ -40,8 +40,7 @@ The application employs a **multi-tenant architecture with dual databases** to e
 
 ### 1. Clone & Install
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/connectwithdevarsh/viewekaapg.git
 npm install
 ```
 
@@ -91,7 +90,6 @@ npm run db:push:secondary
 ## Folder Structure
 
 ```
-├── .agents/                 # AI assistant configurations & skills
 ├── api/                     # Vercel Serverless Function entry point
 │   └── index.ts             
 ├── client/                  # Frontend React application (Vite + TailwindCSS)
