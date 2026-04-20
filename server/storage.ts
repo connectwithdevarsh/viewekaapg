@@ -3,8 +3,8 @@ import {
   type User, type InsertUser, type Resident, type InsertResident,
   type Inquiry, type InsertInquiry, type Payment, type InsertPayment,
   type RoomStatus, type InsertRoomStatus, type Expense, type InsertExpense
-} from "../shared/schema";
-import { db1, db2 } from "./db";
+} from "../shared/schema.js";
+import { db1, db2 } from "./db.js";
 import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {
