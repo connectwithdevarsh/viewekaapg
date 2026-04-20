@@ -50,14 +50,14 @@ Create a `.env` file in the root directory by specifying your two distinct datab
 
 ```env
 # Database 1: EKAA PG (Chanakyapuri)
-DATABASE_URL="postgresql://user:password@hostname/dbname_1?sslmode=require"
+DB_1="postgresql://user:password@hostname/dbname_1?sslmode=require"
 
 # Database 2: EKAA PG (Khakhrej)
-DATABASE_URL_2="postgresql://user:password@hostname/dbname_2?sslmode=require"
+DB_2="postgresql://user:password@hostname/dbname_2?sslmode=require"
 
 # Other environment variables as required
 PORT=5000
-SESSION_SECRET="your-session-secret"
+JWT_SECRET="your-session-secret"
 ```
 
 ## Deployment (Vercel Serverless)
@@ -67,8 +67,14 @@ This application has been structured to run specifically on Vercel utilizing its
 1. **Push your code to GitHub**, ensuring all `.env` variables are secure and not tracked.
 2. **Import your repository** into Vercel.
 3. Vercel will automatically detect the **Vite** framework for the frontend.
-4. **Configure Environment Variables** in your Vercel Project Settings for both `DATABASE_URL` and `DATABASE_URL_2` (as well as your JWT/Session secrets).
+4. **Configure Environment Variables** in your Vercel Project Settings for both `DB_1` and `DB_2` (as well as your `JWT_SECRET`). 
+   > **Note**: After adding environment variables in Vercel, you **must trigger a Re-deployment** for them to be applied!
 5. **Deploy!** Vercel will seamlessly build your Vite frontend and map all `/api/*` endpoints to the serverless `api/index.ts` handler according to the `vercel.json` routing configuration.
+
+### Vercel Serverless Function Compatibility
+The backend has been heavily optimized for Vercel's Node Runtime and Edge Network:
+- **Strict ESM Path Resolution**: All internal module imports within the `server/` directory explicitly feature `.js` extensions (e.g., `import { registerRoutes } from "../server/routes.js"`). This seamlessly bridges TypeScript paths with strict Node.js Execution environments where native ESM demands exact file extensions to avoid `ERR_MODULE_NOT_FOUND` on 500 crashes.
+- **Pure Javascript Cryptography**: Specifically utilizing `bcryptjs` instead of the standard `bcrypt` C++ add-on, eliminating the ubiquitous 'Invalid ELF Header' or module missing build errors native to Amazon Linux 2 platforms used by Vercel's architecture.
 
 ## Database Setup
 
