@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.DS_Store
+.agents/
+tsc_errors.txt
+test-endpoint.js
+test-endpoint2.js
+test-inquiry.cjs
+test-schema.ts
+transform.cjs
+generated-icon.png

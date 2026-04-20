@@ -1,0 +1,13 @@
+import express from "express";
+import { registerRoutes } from "../server/routes";
+
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Initialize the routes on the Express app
+registerRoutes(app);
+
+// Export the app as a serverless function endpoint for Vercel
+export default app;

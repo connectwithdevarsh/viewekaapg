@@ -1,0 +1,367 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Gen-G Theme - Premium Dark/Sapphire Colors */
+  --background: hsl(220, 25%, 8%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(220, 20%, 15%);
+  --muted-foreground: hsl(220, 10%, 60%);
+  --popover: hsl(220, 25%, 12%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(220, 25%, 10%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(220, 20%, 20%);
+  --input: hsl(220, 20%, 18%);
+  --primary: hsl(250, 95%, 60%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(220, 20%, 18%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(280, 85%, 55%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(250, 95%, 60%);
+  --radius: 0.75rem;
+
+  /* Gen-G Extended Colors */
+  --gen-purple: hsl(260, 100%, 60%);
+  --gen-indigo: hsl(250, 95%, 60%);
+  --gen-blue: hsl(220, 90%, 55%);
+  --gen-cyan: hsl(190, 95%, 55%);
+  --gen-pink: hsl(320, 100%, 60%);
+  --gen-orange: hsl(25, 95%, 55%);
+  --gen-gold: hsl(45, 100%, 55%);
+}
+
+.light {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(220, 20%, 10%);
+  --muted: hsl(220, 20%, 96%);
+  --muted-foreground: hsl(220, 10%, 45%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(220, 20%, 10%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(220, 20%, 10%);
+  --border: hsl(220, 20%, 90%);
+  --input: hsl(220, 20%, 90%);
+  --primary: hsl(250, 95%, 55%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(220, 20%, 96%);
+  --secondary-foreground: hsl(220, 20%, 20%);
+  --accent: hsl(280, 85%, 50%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84%, 55%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --ring: hsl(250, 95%, 55%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Enhanced Gen-G Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsla(250, 95%, 60%, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px hsla(250, 95%, 60%, 0.8);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Gen-G Hero Gradient */
+.hero-gradient {
+  background: linear-gradient(135deg,
+    hsl(250, 95%, 15%) 0%,
+    hsl(260, 90%, 20%) 25%,
+    hsl(280, 85%, 18%) 50%,
+    hsl(220, 90%, 15%) 75%,
+    hsl(250, 95%, 12%) 100%);
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-gradient::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: radial-gradient(circle at 30% 40%, hsla(250, 95%, 60%, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 70% 60%, hsla(280, 85%, 55%, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 50% 80%, hsla(320, 100%, 55%, 0.08) 0%, transparent 40%);
+  animation: float 8s ease-in-out infinite;
+}
+
+.hero-gradient::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+/* Gen-G Glassmorphism Cards */
+.glass-card {
+  background: linear-gradient(135deg,
+    hsla(220, 25%, 15%, 0.8) 0%,
+    hsla(220, 25%, 12%, 0.6) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid hsla(250, 95%, 60%, 0.2);
+  box-shadow: 0 8px 32px hsla(250, 95%, 10%, 0.4),
+              inset 0 1px 0 hsla(255, 100%, 100%, 0.05);
+}
+
+.glass-card-light {
+  background: linear-gradient(135deg,
+    hsla(0, 0%, 100%, 0.1) 0%,
+    hsla(0, 0%, 100%, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid hsla(255, 100%, 100%, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2),
+              inset 0 1px 0 hsla(255, 100%, 100%, 0.1);
+}
+
+/* Gen-G Buttons */
+.btn-gen {
+  background: linear-gradient(135deg, hsl(250, 95%, 60%) 0%, hsl(280, 85%, 55%) 100%);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px hsla(250, 95%, 60%, 0.4);
+  border: none;
+}
+
+.btn-gen:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px hsla(250, 95%, 60%, 0.6);
+  filter: brightness(1.1);
+}
+
+.btn-gen-outline {
+  background: transparent;
+  border: 2px solid hsla(250, 95%, 60%, 0.6);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-gen-outline:hover {
+  background: hsla(250, 95%, 60%, 0.1);
+  border-color: hsl(250, 95%, 60%);
+  box-shadow: 0 0 20px hsla(250, 95%, 60%, 0.3);
+}
+
+/* Facility Icons with Gen-G Style */
+.facility-icon {
+  background: linear-gradient(135deg,
+    hsla(250, 95%, 60%, 0.15) 0%,
+    hsla(280, 85%, 55%, 0.1) 100%);
+  border: 1px solid hsla(250, 95%, 60%, 0.2);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.facility-icon:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px hsla(250, 95%, 20%, 0.3);
+  border-color: hsla(250, 95%, 60%, 0.4);
+}
+
+/* Section Styles */
+.section-padding {
+  @apply py-24 px-4 sm:px-6 lg:px-8;
+}
+
+.container-max {
+  @apply max-w-7xl mx-auto;
+}
+
+/* Gen-G Text Gradients */
+.text-gradient {
+  background: linear-gradient(135deg, hsl(250, 95%, 70%) 0%, hsl(320, 100%, 65%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, hsl(45, 100%, 60%) 0%, hsl(35, 100%, 55%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  background: rgba(10, 10, 20, 0.95);
+  backdrop-filter: blur(12px);
+}
+
+/* Card Hover Effects */
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 30px 60px hsla(250, 95%, 10%, 0.4);
+}
+
+/* Smooth section transitions */
+section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+section.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(220, 25%, 8%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(250, 95%, 50%) 0%, hsl(280, 85%, 45%) 100%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, hsl(250, 95%, 60%) 0%, hsl(280, 85%, 55%) 100%);
+}
+
+/* Gen-G WhatsApp Button */
+.btn-whatsapp {
+  background: linear-gradient(135deg, hsl(142, 76%, 40%) 0%, hsl(142, 76%, 35%) 100%);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+}
