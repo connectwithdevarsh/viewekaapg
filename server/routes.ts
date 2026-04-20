@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { getStorage, type IStorage } from "./storage";
 import { insertExpenseSchema } from "@shared/schema";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { insertResidentSchema, insertInquirySchema, insertPaymentSchema, type Resident, type Payment } from "@shared/schema";
 
