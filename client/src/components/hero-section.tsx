@@ -103,7 +103,7 @@ export default function HeroSection() {
                 asChild
                 className="btn-whatsapp text-white rounded-full px-6"
               >
-                <a href="https://wa.me/918002880087" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/919559755055" target="_blank" rel="noopener noreferrer">
                   Chat Now
                 </a>
               </Button>

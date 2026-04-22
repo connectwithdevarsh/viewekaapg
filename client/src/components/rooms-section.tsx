@@ -26,13 +26,13 @@ const roomTypes = [
   {
     title: "5 Sharing Room (A/C)",
     description: "Dormitory style with A/C",
-    price: "₹7,000",
+    price: "₹7,500",
     image: "https://i.ibb.co/qYrc6Ck2/Screenshot-20260414-221556.jpg"
   },
   {
     title: "6 Sharing Room (A/C)",
     description: "Budget-friendly shared room",
-    price: "₹7,000",
+    price: "₹7,500",
     image: "https://i.ibb.co/qLt01Tqn/Screenshot-20260414-221843.jpg"
   }
 ];
