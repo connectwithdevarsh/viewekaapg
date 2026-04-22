@@ -94,7 +94,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 </SelectTrigger>
                 <SelectContent className="bg-[hsl(220,25%,12%)] border-purple-500/20">
                   <SelectItem value="chanakyapuri" className="text-white hover:bg-purple-500/20 font-bold">EKAA PG (Chanakyapuri)</SelectItem>
-                  <SelectItem value="khakhrej" className="text-indigo-200 hover:bg-indigo-500/20 font-bold">EKAA PG (Khakhrej)</SelectItem>
+                  <SelectItem value="khatraj" className="text-indigo-200 hover:bg-indigo-500/20 font-bold">EKAA PG (Khatraj)</SelectItem>
                 </SelectContent>
               </Select>
               

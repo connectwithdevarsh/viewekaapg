@@ -9,7 +9,7 @@ const roomRatesChanakyapuri = [
   { type: "6 Sharing Room (A/C)", price: "₹7,500/month" }
 ];
 
-const roomRatesKhakhrej = [
+const roomRatesKhatraj = [
   { type: "1 Sharing Room (A/C)", price: "₹25,000/month" },
   { type: "2 Sharing Room (A/C)", price: "₹13,000/month" },
   { type: "5 Sharing Room (A/C)", price: "₹7,500/month" },
@@ -80,18 +80,18 @@ export default function PricingSection() {
               </CardContent>
             </Card>
 
-            {/* Khakhrej Pricing Card */}
+            {/* Khatraj Pricing Card */}
             <Card className="glass-card border-indigo-500/30 overflow-hidden">
               <CardContent className="p-10">
                 <div className="text-center mb-8">
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-teal-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <Star className="w-8 h-8 text-blue-400" />
                   </div>
-                  <h3 className="text-3xl font-bold text-white mb-2">EKAA PG (Khakhrej)</h3>
+                  <h3 className="text-3xl font-bold text-white mb-2">EKAA PG (Khatraj)</h3>
                   <p className="text-indigo-200/60">Starting from ₹7,500/month</p>
                 </div>
                 <div className="space-y-4">
-                  {roomRatesKhakhrej.map((rate, index) => (
+                  {roomRatesKhatraj.map((rate, index) => (
                     <div
                       key={index}
                       className="flex justify-between items-center py-4 px-6 glass-card-light rounded-xl bg-indigo-900/10"

@@ -8,7 +8,7 @@ neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DB_1 || !process.env.DB_2) {
   throw new Error(
-    "CRITICAL: DB_1 and DB_2 must be set in your .env file to ensure strict data isolation between Chanakyapuri and Khakhrej."
+    "CRITICAL: DB_1 and DB_2 must be set in your .env file to ensure strict data isolation between Chanakyapuri and Khatraj."
   );
 }
 

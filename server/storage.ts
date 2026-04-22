@@ -204,6 +204,6 @@ export const storage2 = new DatabaseStorage(db2);
 
 export const getStorage = (pgId?: string): IStorage => {
   if (pgId === 'chanakyapuri') return storage1;
-  if (pgId === 'khakhrej') return storage2;
-  throw new Error(`Invalid or missing pgLocation: ${pgId}. Strict routing requires either 'chanakyapuri' or 'khakhrej'.`);
+  if (pgId === 'khatraj') return storage2;
+  throw new Error(`Invalid or missing pgLocation: ${pgId}. Strict routing requires either 'chanakyapuri' or 'khatraj'.`);
 };

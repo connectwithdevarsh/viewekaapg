@@ -130,7 +130,7 @@ export default function ContactSection() {
                       <p className="text-purple-200/60">
                         EKAA PG, Vishwas City 1, Chanakyapuri
                         <br />
-                        EKAA PG, Khakhrej
+                        EKAA PG, Khatraj
                       </p>
                     </div>
                   </div>
@@ -174,7 +174,7 @@ export default function ContactSection() {
                     </SelectTrigger>
                     <SelectContent className="bg-[hsl(220,25%,12%)] border-purple-500/20">
                       <SelectItem value="chanakyapuri" className="text-white hover:bg-purple-500/20">EKAA PG (Chanakyapuri)</SelectItem>
-                      <SelectItem value="khakhrej" className="text-white hover:bg-purple-500/20">EKAA PG (Khakhrej)</SelectItem>
+                      <SelectItem value="khatraj" className="text-white hover:bg-purple-500/20">EKAA PG (Khatraj)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

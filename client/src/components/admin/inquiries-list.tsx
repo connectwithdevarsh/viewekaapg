@@ -63,7 +63,7 @@ export default function InquiriesList() {
           <div className="flex flex-col">
             <CardTitle className="text-xl text-white">Recent Inquiries</CardTitle>
             <span className="text-xs font-medium text-pink-400 mt-1 uppercase tracking-wider">
-               EKAA PG - {localStorage.getItem('pg-id') === 'khakhrej' ? 'Khakhrej' : 'Chanakyapuri'}
+               EKAA PG - {localStorage.getItem('pg-id') === 'khatraj' ? 'Khatraj' : 'Chanakyapuri'}
             </span>
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function InquiriesList() {
                 </div>
                 <div className="flex gap-2">
                   <Badge variant="outline" className="text-purple-300 border-purple-500/30 bg-purple-500/10">
-                    EKAA PG - {localStorage.getItem('pg-id') === 'khakhrej' ? 'Khakhrej' : 'Chanakyapuri'}
+                    EKAA PG - {localStorage.getItem('pg-id') === 'khatraj' ? 'Khatraj' : 'Chanakyapuri'}
                   </Badge>
                   <Badge
                     variant={inquiry.isHandled ? "default" : "secondary"}

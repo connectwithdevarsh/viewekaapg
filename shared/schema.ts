@@ -28,7 +28,7 @@ export const inquiries = pgTable("inquiries", {
   roomType: text("room_type").notNull(),
   stayDuration: text("stay_duration"),
   phone: text("phone").notNull(),
-  pgLocation: text("pg_location").notNull(),
+  pgLocation: text("pg_location").notNull().default("chanakyapuri"),
   createdAt: timestamp("created_at").defaultNow(),
   isHandled: boolean("is_handled").default(false),
 });

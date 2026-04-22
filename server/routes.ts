@@ -59,10 +59,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       const pgId = req.body?.pgLocation || req.query?.pgLocation || req.headers['x-pg-id'];
       if (!pgId) {
-        return res.status(400).json({ message: "pgLocation is REQUIRED in every request (body, query, or x-pg-id header)" });
+        // If it's the inquiry POST route, we can try to get it from the body specifically
+        // but if req.body is missing entirely, that's the real problem.
+        return res.status(400).json({ 
+          message: "pgLocation is REQUIRED", 
+          details: "Missing pgLocation in body, query, or x-pg-id header. Current body: " + JSON.stringify(req.body)
+        });
       }
-      if (pgId !== 'chanakyapuri' && pgId !== 'khakhrej') {
-          return res.status(400).json({ message: "Invalid pgLocation. Strictly only 'chanakyapuri' or 'khakhrej' allowed." });
+      if (pgId !== 'chanakyapuri' && pgId !== 'khatraj') {
+          return res.status(400).json({ message: "Invalid pgLocation. Strictly only 'chanakyapuri' or 'khatraj' allowed." });
       }
       req.storage = getStorage(pgId as string);
       next();
@@ -108,12 +113,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact form submission
   app.post("/api/inquiries", async (req, res) => {
     try {
+      console.log("Inquiry request body:", JSON.stringify(req.body));
       const validatedData = insertInquirySchema.parse(req.body);
+      console.log("Validated inquiry data:", JSON.stringify(validatedData));
       const inquiry = await req.storage.createInquiry(validatedData);
+      console.log("Inquiry created successfully:", JSON.stringify(inquiry));
       return res.status(201).json(inquiry);
-    } catch (error) {
-      console.error("Inquiry error:", error);
-      res.status(400).json({ message: "Invalid inquiry data", details: String(error) });
+    } catch (error: any) {
+      console.error("Inquiry error detail:", error);
+      res.status(400).json({ 
+        message: "Invalid inquiry data", 
+        details: error instanceof Error ? error.message : String(error),
+        zodError: error?.errors // If it's a zod error
+      });
     }
   });
 

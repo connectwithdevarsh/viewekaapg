@@ -116,9 +116,9 @@ export default function LocationSection() {
             </div>
           </div>
 
-          {/* Khakhrej Location */}
+          {/* Khatraj Location */}
           <div>
-            <h3 className="text-3xl font-bold text-white mb-8 border-l-4 border-indigo-500 pl-4">EKAA PG (Khakhrej)</h3>
+            <h3 className="text-3xl font-bold text-white mb-8 border-l-4 border-indigo-500 pl-4">EKAA PG (Khatraj)</h3>
             <div className="grid lg:grid-cols-2 gap-12 items-start">
               <div className="space-y-6">
                 <Card className="glass-card border-indigo-500/20 card-hover">
@@ -130,7 +130,7 @@ export default function LocationSection() {
                       <h4 className="text-2xl font-bold text-white">Our Address</h4>
                     </div>
                     <p className="text-lg text-purple-200/70 leading-relaxed">
-                      EKAA PG, Khakhrej<br />
+                      EKAA PG, Khatraj<br />
                       Ahmedabad, Gujarat
                     </p>
                   </CardContent>
@@ -158,7 +158,7 @@ export default function LocationSection() {
               </div>
 
               <Card className="glass-card border-indigo-500/20 overflow-hidden card-hover flex items-center justify-center bg-gray-900 min-h-[500px]">
-                  {/* Placeholder for Khakhrej map iframe */}
+                  {/* Placeholder for Khatraj map iframe */}
                   <p className="text-purple-200/50">Map not configured yet</p>
               </Card>
             </div>
