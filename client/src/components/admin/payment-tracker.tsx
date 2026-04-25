@@ -56,7 +56,7 @@ export default function PaymentTracker() {
   });
 
   const updatePaymentStatus = useMutation({
-    mutationFn: ({ id, status, paidDate }: { id: number, status: string, paidDate?: Date }) =>
+    mutationFn: ({ id, status, paidDate }: { id: string, status: string, paidDate?: Date }) =>
       apiRequest("PUT", `/api/payments/${id}/status`, { status, paidDate }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/payments'] });
@@ -82,7 +82,7 @@ export default function PaymentTracker() {
   });
 
   const deletePayment = useMutation({
-    mutationFn: (id: number) =>
+    mutationFn: (id: string) =>
       apiRequest("DELETE", `/api/payments/${id}`, undefined),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/payments'] });
@@ -93,7 +93,7 @@ export default function PaymentTracker() {
     }
   });
 
-  const markAsPaid = (id: number) => {
+  const markAsPaid = (id: string) => {
     updatePaymentStatus.mutate({ id, status: "paid", paidDate: new Date() });
   };
 

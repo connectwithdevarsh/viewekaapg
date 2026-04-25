@@ -47,7 +47,7 @@ export default function ExpenseManagement() {
   });
 
   const deleteExpense = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/expenses/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/expenses/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/expenses'] });
       toast({ title: "Success", description: "Entry deleted successfully" });

@@ -25,7 +25,7 @@ export default function InquiriesList() {
   });
 
   const markAsHandled = useMutation({
-    mutationFn: (id: number) =>
+    mutationFn: (id: string) =>
       apiRequest("PUT", `/api/inquiries/${id}/handled`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/inquiries'] });

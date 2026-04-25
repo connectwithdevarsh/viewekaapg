@@ -1,10 +1,8 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { getStorage, type IStorage } from "./storage.js";
-import { insertExpenseSchema } from "../shared/schema.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { insertResidentSchema, insertInquirySchema, insertPaymentSchema, type Resident, type Payment } from "../shared/schema.js";
+import { insertExpenseSchema, insertResidentSchema, insertInquirySchema, insertPaymentSchema, type Resident, type Payment } from "../shared/schema.js";
+import { auth } from "./firebase.js";
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -13,26 +11,18 @@ declare module 'express-serve-static-core' {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
 
 // In-memory admin fallback (for when DB is not set up)
+// Kept for backward compatibility if needed, but Firebase Auth is preferred
 const ADMIN_USER = {
-  id: 1,
+  id: "admin",
   username: "RADHE",
-  password: "@RADHE011"  // Plain text for simple comparison
+  password: "@RADHE011"
 };
 
-// In-memory storage fallback
-const memoryStorage = {
-  inquiries: [] as any[],
-  residents: [] as any[],
-  payments: [] as any[],
-  roomStatus: [] as any[],
-  nextId: 1
-};
-
-// Middleware to verify JWT token
-const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+// Middleware to verify Firebase ID Token or Admin Fallback
+const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -40,11 +30,20 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
+  // Allow a fallback "admin" token for the frontend before it's fully migrated
+  if (token === 'admin-fallback-token') {
+    req.user = { uid: "admin", role: "admin" };
+    return next();
+  }
+
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    req.user = decodedToken;
     next();
-  });
+  } catch (error) {
+    console.error("Firebase auth verification error", error);
+    return res.sendStatus(403);
+  }
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -59,11 +58,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       const pgId = req.body?.pgLocation || req.query?.pgLocation || req.headers['x-pg-id'];
       if (!pgId) {
-        // If it's the inquiry POST route, we can try to get it from the body specifically
-        // but if req.body is missing entirely, that's the real problem.
         return res.status(400).json({ 
           message: "pgLocation is REQUIRED", 
-          details: "Missing pgLocation in body, query, or x-pg-id header. Current body: " + JSON.stringify(req.body)
+          details: "Missing pgLocation in body, query, or x-pg-id header."
         });
       }
       if (pgId !== 'chanakyapuri' && pgId !== 'khatraj') {
@@ -75,33 +72,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: error.message });
     }
   });
+
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
     try {
-      const { username, password } = req.body;
+      const { username, password, token } = req.body;
 
-      if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
-      }
-
-      // Check in-memory admin first (fallback)
-      if (username === ADMIN_USER.username && password === ADMIN_USER.password) {
-        const token = jwt.sign({ id: ADMIN_USER.id, username: ADMIN_USER.username }, JWT_SECRET, { expiresIn: '24h' });
-        return res.json({ token, user: { id: ADMIN_USER.id, username: ADMIN_USER.username } });
-      }
-
-      // Try database lookup
-      try {
-        const user = await req.storage.getUserByUsername(username);
-        if (user) {
-          const isValidPassword = await bcrypt.compare(password, user.password);
-          if (isValidPassword) {
-            const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
-            return res.json({ token, user: { id: user.id, username: user.username } });
-          }
+      // If client sends a Firebase ID token
+      if (token) {
+        try {
+          const decoded = await auth.verifyIdToken(token);
+          return res.json({ token, user: { id: decoded.uid, username: decoded.email } });
+        } catch (err) {
+          return res.status(401).json({ message: "Invalid Firebase token" });
         }
-      } catch (dbError) {
-        console.log("Database login failed, using fallback");
+      }
+
+      // Fallback to legacy hardcoded admin for frontend compatibility during migration
+      if (username === ADMIN_USER.username && password === ADMIN_USER.password) {
+        return res.json({ token: 'admin-fallback-token', user: { id: ADMIN_USER.id, username: ADMIN_USER.username } });
       }
 
       return res.status(401).json({ message: "Invalid credentials" });
@@ -113,18 +102,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact form submission
   app.post("/api/inquiries", async (req, res) => {
     try {
-      console.log("Inquiry request body:", JSON.stringify(req.body));
       const validatedData = insertInquirySchema.parse(req.body);
-      console.log("Validated inquiry data:", JSON.stringify(validatedData));
       const inquiry = await req.storage.createInquiry(validatedData);
-      console.log("Inquiry created successfully:", JSON.stringify(inquiry));
       return res.status(201).json(inquiry);
     } catch (error: any) {
-      console.error("Inquiry error detail:", error);
       res.status(400).json({ 
         message: "Invalid inquiry data", 
-        details: error instanceof Error ? error.message : String(error),
-        zodError: error?.errors // If it's a zod error
+        details: error instanceof Error ? error.message : String(error)
       });
     }
   });
@@ -132,15 +116,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Protected admin routes
   app.get("/api/residents", authenticateToken, async (req, res) => {
     try {
-      // Try database first
-      try {
-        const residents = await req.storage.getAllResidents();
-        return res.json(residents);
-      } catch (dbError) {
-        console.log("DB residents fetch failed, using memory");
-      }
-      // Fallback to memory
-      res.json(memoryStorage.residents.filter(r => r.isActive !== false));
+      const residents = await req.storage.getAllResidents();
+      return res.json(residents);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch residents" });
     }
@@ -149,40 +126,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/residents", authenticateToken, async (req, res) => {
     try {
       const validatedData = insertResidentSchema.parse(req.body);
-
-      // Try database first
-      try {
-        const resident = await req.storage.createResident(validatedData);
-        return res.status(201).json(resident);
-      } catch (dbError) {
-        console.log("DB resident creation failed, using memory storage");
-      }
-
-      // Fallback to memory storage
-      const resident = {
-        id: memoryStorage.nextId++,
-        ...validatedData,
-        createdAt: new Date(),
-        isActive: true
-      };
-      memoryStorage.residents.push(resident);
-      res.status(201).json(resident);
+      const resident = await req.storage.createResident(validatedData);
+      return res.status(201).json(resident);
     } catch (error) {
-      console.error("Resident creation error:", error);
       res.status(400).json({ message: "Invalid resident data" });
     }
   });
 
   app.put("/api/residents/:id", authenticateToken, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const validatedData = insertResidentSchema.partial().parse(req.body);
       const resident = await req.storage.updateResident(id, validatedData);
-      
       if (!resident) {
         return res.status(404).json({ message: "Resident not found" });
       }
-      
       res.json(resident);
     } catch (error) {
       res.status(400).json({ message: "Invalid resident data" });
@@ -191,13 +149,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/residents/:id", authenticateToken, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const success = await req.storage.deleteResident(id);
-      
       if (!success) {
         return res.status(404).json({ message: "Resident not found" });
       }
-      
       res.json({ message: "Resident deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete resident" });
@@ -215,13 +171,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/inquiries/:id/handled", authenticateToken, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const success = await req.storage.markInquiryHandled(id);
-      
       if (!success) {
         return res.status(404).json({ message: "Inquiry not found" });
       }
-      
       res.json({ message: "Inquiry marked as handled" });
     } catch (error) {
       res.status(500).json({ message: "Failed to update inquiry" });
@@ -241,16 +195,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertPaymentSchema.parse(req.body);
       const payment = await req.storage.createPayment(validatedData);
+
+      const amountAsNumber = Number(payment.amount);
+      if (!isNaN(amountAsNumber)) {
+        await req.storage.createExpense({
+          amount: amountAsNumber.toString(),
+          description: `Resident Payment (Resident ID: ${payment.residentId})`,
+          type: 'income',
+          category: 'Fee Payment',
+          date: new Date()
+        });
+      }
+
       res.status(201).json(payment);
     } catch (error: any) {
-      console.error("Payment Error:", error);
       res.status(400).json({ message: error.message || "Invalid payment data", details: error });
     }
   });
 
   app.put("/api/payments/:id/status", authenticateToken, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const { status, paidDate } = req.body;
       const payment = await req.storage.updatePaymentStatus(id, status, paidDate ? new Date(paidDate) : undefined);
       
@@ -262,7 +227,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const amountAsNumber = Number(payment.amount);
         if (!isNaN(amountAsNumber)) {
           await req.storage.createExpense({
-            // @ts-ignore
             amount: amountAsNumber.toString(),
             description: `Fee payment from resident ${payment.residentId}`,
             type: 'income',
@@ -280,13 +244,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/payments/:id", authenticateToken, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const success = await req.storage.deletePayment(id);
-      
       if (!success) {
         return res.status(404).json({ message: "Payment not found" });
       }
-      
       res.json({ message: "Payment deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete payment" });
@@ -305,7 +267,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return acc;
       }, {} as Record<string, number>);
 
-      // Default totals if DB is missing some settings
       const defaultTotal = { "1-sharing": 5, "2-sharing": 5, "5-sharing": 2, "6-sharing": 4 };
       const roomTypes = ["1-sharing", "2-sharing", "5-sharing", "6-sharing"];
 
@@ -335,9 +296,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const residents = await req.storage.getAllResidents();
       const payments = await req.storage.getAllPayments();
       
-      const roomResidents = residents.filter((r: Resident) => r.roomType === roomType && r.isActive !== false);
+      const normalizedParam = roomType.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const roomResidents = residents.filter((r: Resident) => {
+        const normalizedDb = (r.roomType || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+        return (normalizedDb === normalizedParam || normalizedDb.includes(normalizedParam) || normalizedParam.includes(normalizedDb)) && r.isActive !== false;
+      });
       
-      // Sort by room number logically
       roomResidents.sort((a: Resident, b: Resident) => {
          const aNum = parseInt(a.roomNumber) || 0;
          const bNum = parseInt(b.roomNumber) || 0;
@@ -347,7 +311,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const roomDetails = roomResidents.map((resident: Resident) => {
         const residentPayments = payments.filter((p: Payment) => p.residentId === resident.id);
-        // Sort payments by date descending if possible, or leave as is
         return {
           ...resident,
           payments: residentPayments
@@ -361,7 +324,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  
   app.get("/api/expenses", authenticateToken, async (req: any, res) => {
     try {
       const expenses = await req.storage.getAllExpenses();
@@ -384,9 +346,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/expenses/:id", authenticateToken, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = req.params.id;
       const success = await req.storage.deleteExpense(id);
-      
       if (!success) {
         return res.status(404).json({ message: "Expense not found" });
       }

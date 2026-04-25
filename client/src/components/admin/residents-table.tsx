@@ -35,7 +35,7 @@ export default function ResidentsTable() {
   });
 
   const deleteResident = useMutation({
-    mutationFn: (id: number) =>
+    mutationFn: (id: string) =>
       apiRequest("DELETE", `/api/residents/${id}`, undefined),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/residents'] });
@@ -63,7 +63,7 @@ export default function ResidentsTable() {
     );
   }
 
-  const getPayoutStatus = (residentId: number) => {
+  const getPayoutStatus = (residentId: string) => {
     if (!payments) return null;
     const residentPayments = payments.filter(p => p.residentId === residentId);
     if (residentPayments.length === 0) {
