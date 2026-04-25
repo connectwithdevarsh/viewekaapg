@@ -48,6 +48,9 @@ export class FirebaseStorage implements IStorage {
   }
 
   private col(name: string) {
+    if (!db) {
+      throw new Error("Firebase DB is not initialized. Please configure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY environment variables in Vercel.");
+    }
     return db.collection(`${this.basePath}/${name}`);
   }
 

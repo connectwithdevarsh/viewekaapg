@@ -37,6 +37,10 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
   }
 
   try {
+    if (!auth) {
+      return res.status(500).json({ message: "Firebase Auth is not initialized. Please configure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY environment variables in Vercel." });
+    }
+
     const decodedToken = await auth.verifyIdToken(token);
     req.user = decodedToken;
     next();
