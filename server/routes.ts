@@ -122,8 +122,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const residents = await req.storage.getAllResidents();
       return res.json(residents);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch residents" });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to fetch residents", details: error?.message || String(error) });
     }
   });
 
