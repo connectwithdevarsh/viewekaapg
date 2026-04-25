@@ -1,4 +1,4 @@
-import { 
+import {
   type User, type InsertUser, type Resident, type InsertResident,
   type Inquiry, type InsertInquiry, type Payment, type InsertPayment,
   type RoomStatus, type InsertRoomStatus, type Expense, type InsertExpense
@@ -111,6 +111,7 @@ export class FirebaseStorage implements IStorage {
   }
 
   async deleteResident(id: string): Promise<boolean> {
+    if (!db) throw new Error("Firebase DB is not initialized.");
     // Delete associated payments
     const paymentsSnap = await this.col('payments').where('residentId', '==', id).get();
     const batch = db.batch();
@@ -144,11 +145,11 @@ export class FirebaseStorage implements IStorage {
   async getAllPayments(): Promise<(Payment & { resident: Resident })[]> {
     const paymentsSnap = await this.col('payments').orderBy('createdAt', 'desc').get();
     const payments = paymentsSnap.docs.map(doc => ({ id: doc.id, ...this.convertDate(doc.data()) } as Payment));
-    
+
     // Fetch residents for these payments
     const residentIds = Array.from(new Set(payments.map(p => p.residentId)));
     const residentsMap = new Map<string, Resident>();
-    
+
     await Promise.all(residentIds.map(async (rid) => {
       if (!residentsMap.has(rid)) {
         const res = await this.getResident(rid);

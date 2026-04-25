@@ -85,6 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // If client sends a Firebase ID token
       if (token) {
         try {
+          if (!auth) throw new Error("Firebase Auth is not initialized");
           const decoded = await auth.verifyIdToken(token);
           return res.json({ token, user: { id: decoded.uid, username: decoded.email } });
         } catch (err) {
