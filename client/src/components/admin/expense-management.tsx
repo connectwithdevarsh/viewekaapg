@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,17 @@ export default function ExpenseManagement() {
     amount: "",
     description: "",
     type: "expense",
-    category: "Maintenance"
+    category: "Maintenance",
+    date: new Date().toISOString().split('T')[0]
   });
+
+  const [monthValue, setMonthValue] = useState(new Date().toISOString().slice(0, 7));
+
+  const formattedDisplayMonth = useMemo(() => {
+    if (!monthValue) return "";
+    const date = new Date(monthValue + "-01T00:00:00");
+    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+  }, [monthValue]);
 
   const { data: expenses = [], isLoading } = useQuery<Expense[]>({
     queryKey: ['/api/expenses'],
@@ -63,12 +72,44 @@ export default function ExpenseManagement() {
     createExpense.mutate(formData);
   };
 
-  const totalIncome = expenses.filter(e => e.type === 'income').reduce((acc, curr) => acc + Number(curr.amount), 0);
-  const totalExpense = expenses.filter(e => e.type === 'expense').reduce((acc, curr) => acc + Number(curr.amount), 0);
+  const filteredExpenses = useMemo(() => {
+    if (!monthValue) return expenses;
+    return expenses.filter(e => {
+      if (!e.date) return false;
+      const expenseDate = new Date(e.date);
+      const expenseMonth = expenseDate.toISOString().slice(0, 7);
+      return expenseMonth === monthValue;
+    });
+  }, [expenses, monthValue]);
+
+  const totalIncome = filteredExpenses.filter(e => e.type === 'income').reduce((acc, curr) => acc + Number(curr.amount), 0);
+  const totalExpense = filteredExpenses.filter(e => e.type === 'expense').reduce((acc, curr) => acc + Number(curr.amount), 0);
   const netProfit = totalIncome - totalExpense;
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[hsl(220,25%,12%)] p-4 rounded-xl border border-purple-500/20 glass-card">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-xl flex items-center justify-center">
+            <Receipt className="w-5 h-5 text-purple-400" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white">Monthly Expense Register</h3>
+            <p className="text-sm text-purple-200/60">Manage your finances for {formattedDisplayMonth}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="month-picker" className="text-purple-200 whitespace-nowrap">Select Month:</Label>
+          <Input 
+            id="month-picker"
+            type="month"
+            value={monthValue}
+            onChange={(e) => setMonthValue(e.target.value)}
+            className="bg-[hsl(220,25%,10%)] border-purple-500/20 text-white focus:border-purple-500/50 min-w-[150px] max-w-[200px]"
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="glass-card border-green-500/20">
           <CardContent className="p-6">
@@ -157,6 +198,16 @@ export default function ExpenseManagement() {
               </div>
 
               <div className="space-y-2">
+                <Label className="text-purple-200">Date</Label>
+                <Input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                  className="bg-[hsl(220,25%,12%)] border-purple-500/20 text-white"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label className="text-purple-200">Description</Label>
                 <Input
                   value={formData.description}
@@ -175,16 +226,16 @@ export default function ExpenseManagement() {
 
         <Card className="glass-card border-purple-500/20 lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-xl text-white">Recent Transactions</CardTitle>
+            <CardTitle className="text-xl text-white">Transactions for {formattedDisplayMonth}</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="text-center py-8 text-purple-200/60">Loading entries...</div>
-            ) : expenses.length === 0 ? (
-              <div className="text-center py-8 text-purple-200/60">No financial entries found.</div>
+            ) : filteredExpenses.length === 0 ? (
+              <div className="text-center py-8 text-purple-200/60">No financial entries found for this month.</div>
             ) : (
               <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                {expenses.map((expense) => (
+                {filteredExpenses.map((expense) => (
                   <div key={expense.id} className="flex items-center justify-between p-4 bg-purple-500/5 border border-purple-500/10 rounded-xl">
                     <div className="flex items-start gap-4">
                       <div className={`mt-1 w-10 h-10 rounded-xl flex items-center justify-center ${

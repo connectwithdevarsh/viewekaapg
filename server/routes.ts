@@ -201,15 +201,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertPaymentSchema.parse(req.body);
       const payment = await req.storage.createPayment(validatedData);
 
-      const amountAsNumber = Number(payment.amount);
-      if (!isNaN(amountAsNumber)) {
-        await req.storage.createExpense({
-          amount: amountAsNumber.toString(),
-          description: `Resident Payment (Resident ID: ${payment.residentId})`,
-          type: 'income',
-          category: 'Fee Payment',
-          date: new Date()
-        });
+      if (payment.status === 'paid') {
+        const amountAsNumber = Number(payment.amount);
+        if (!isNaN(amountAsNumber)) {
+          let residentName = payment.residentId;
+          try {
+            const resident = await req.storage.getResident(payment.residentId);
+            if (resident) {
+              residentName = resident.name;
+            }
+          } catch (e) {
+            console.error("Could not fetch resident details", e);
+          }
+          await req.storage.createExpense({
+            amount: amountAsNumber.toString(),
+            description: `Fee payment from resident ${residentName}`,
+            type: 'income',
+            category: 'Fee Payment',
+            date: new Date()
+          });
+        }
       }
 
       res.status(201).json(payment);
@@ -231,9 +242,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (status === 'paid') {
         const amountAsNumber = Number(payment.amount);
         if (!isNaN(amountAsNumber)) {
+          let residentName = payment.residentId;
+          try {
+            const resident = await req.storage.getResident(payment.residentId);
+            if (resident) {
+              residentName = resident.name;
+            }
+          } catch (e) {
+            console.error("Could not fetch resident details", e);
+          }
           await req.storage.createExpense({
             amount: amountAsNumber.toString(),
-            description: `Fee payment from resident ${payment.residentId}`,
+            description: `Fee payment from resident ${residentName}`,
             type: 'income',
             category: 'Fee Payment',
             date: new Date()

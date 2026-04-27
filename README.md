@@ -10,11 +10,11 @@ The system features a comprehensive admin panel for administrators to track and 
 ## Core Features
 * **Multi-PG Support**: Full data isolation between different PG properties.
 * **Dual Databases**: Separate PostgreSQL databases (hosted on Neon) for each PG.
-* **Admin Dashboard**: Centralized dashboard with a simple UI and dynamic PG switching.
+* **Admin Dashboard**: Centralized dashboard with a simple UI, dynamic PG switching, and seamless data refresh with visual feedback.
 * **Resident Management**: Add, view, and manage resident data effortlessly.
 * **Room Management**: Structured hierarchy handling sharing types → room numbers → resident details.
-* **Payment Tracking**: Keep track of monthly student payments and dues.
-* **Expense Management**: Supports manual input and automatic, real-time calculation of expenses versus income.
+* **Payment Tracking**: Keep track of monthly student payments and dues. Single-click marking of paid dues automatically creates valid expense entries.
+* **Expense Management**: Monthly Expense Register with custom date selection, automatic resident name mapping for rent entries, and real-time calculation of net profit for any selected month.
 * **Inquiry System**: Intelligent inquiry routing with PG location selection.
 * **Google Maps Integration**: Integrated maps for easy navigation to each PG location.
 

@@ -8,7 +8,8 @@ import PaymentTracker from "./payment-tracker";
 import RoomStatus from "./room-status";
 import InquiriesList from "./inquiries-list";
 import ExpenseManagement from "./expense-management";
-import { LogOut, LayoutDashboard, Users, UserPlus, CreditCard, Building2, MessageSquare, Sparkles, Receipt } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, UserPlus, CreditCard, Building2, MessageSquare, Sparkles, Receipt, RefreshCw } from "lucide-react";
+import { queryClient } from "@/lib/queryClient";
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -19,6 +20,13 @@ type AdminSection = "residents" | "add-resident" | "payments" | "rooms" | "inqui
 export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [activeSection, setActiveSection] = useState<AdminSection>("residents");
   const [pgLocation, setPgLocation] = useState(localStorage.getItem('pg-id') || "chanakyapuri");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await queryClient.invalidateQueries();
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   useEffect(() => {
     if (!localStorage.getItem('pg-id')) {
@@ -97,6 +105,16 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   <SelectItem value="khatraj" className="text-indigo-200 hover:bg-indigo-500/20 font-bold">EKAA PG (Khatraj)</SelectItem>
                 </SelectContent>
               </Select>
+              
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+                disabled={isRefreshing}
+              >
+                <RefreshCw className={`mr-2 ${isRefreshing ? 'animate-spin' : ''}`} size={16} />
+                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+              </Button>
               
               <Button
                 onClick={handleLogout}
